@@ -36,7 +36,7 @@ function initialize () {
 		-H "X-Auth-UserId: $USER_UUID" \
 		-H "X-Auth-Token: $API_TOKEN" \
 		-X GET \
-		https://api.hosttech.cloud/objects/servers
+		https://api.hosttech.cloud/objects/servers)
 
 		echo "These Servers are available:"
 		echo $serversjson | jq '.[] | .[] | "\(.name) \(.object_uuid)" ' | tr -d "\"" | column -t -s' '
