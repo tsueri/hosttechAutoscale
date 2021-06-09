@@ -41,7 +41,7 @@ function initialize () {
 		echo "These Servers are available:"
 		echo $serversjson | jq '.[] | .[] | "\(.name) \(.object_uuid)" ' | tr -d "\"" | column -t -s' '
 
-		read -p "Please enter the SERVER_UUID of this Server. Use getServer.sh in this Repo to get it: " SERVER_UUID
+		read -p "Please enter the SERVER_UUID of this Server: " SERVER_UUID
     touch hosttechAutoscale.conf
 cat <<EOT >> hosttechAutoscale.conf
 USER_UUID="$USER_UUID"
@@ -133,7 +133,7 @@ if [[ $((cpuuse)) -ge $cpulimit && $((uptime)) -gt 10 ]]; then
 	cpunew=$((cpu+1))
 	echo "New CPU $cpunew"
 	more_cpu $cpunew
-	echo `date` ": The number of CPU on this Server was updated. $cpunew Cores are activ now." >> update.log
+	echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: The number of CPU on this Server was updated. $cpunew Cores are activ now." >> update.log
 else
 	exit
 fi
