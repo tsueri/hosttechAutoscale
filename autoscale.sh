@@ -133,6 +133,7 @@ fi
 # This Script scales by 1 CPU if conditions are met (CPU-Threshold reached and Uptime longer than 20 Minutes).
 if [[ $((cpuuse)) -ge $cpulimit && $((uptime)) -gt 20 ]]; then
 	cpunew=$((cpu+1))
+	# Exit if maxcpu reached
 	if [[ $cpunew > $cpumax ]]; then
 		echo "Max CPU reached."
 		exit
