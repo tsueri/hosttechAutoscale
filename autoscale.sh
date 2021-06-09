@@ -42,7 +42,7 @@ function initialize () {
 		echo $serversjson | jq '.[] | .[] | "\(.name) \(.object_uuid)" ' | tr -d "\"" | column -t -s' '
 
 		read -p "Please enter the SERVER_UUID of this Server: " SERVER_UUID
-		read -p "Enter max CPU (Number)" cpumax
+		read -p "Enter max CPU (Number): " cpumax
     touch hosttechAutoscale.conf
 cat <<EOT >> hosttechAutoscale.conf
 USER_UUID="$USER_UUID"
@@ -130,8 +130,8 @@ if [[ $cpuuse = 0* ]]; then
 	exit 1
 fi
 
-# This Script scales by 1 CPU if conditions are met (CPU-Threshold reached and Uptime longer than 10 Minutes).
-if [[ $((cpuuse)) -ge $cpulimit && $((uptime)) -gt 10 ]]; then
+# This Script scales by 1 CPU if conditions are met (CPU-Threshold reached and Uptime longer than 20 Minutes).
+if [[ $((cpuuse)) -ge $cpulimit && $((uptime)) -gt 20 ]]; then
 	cpunew=$((cpu+1))
 	if [[ $cpunew > $cpumax ]]; then
 		echo "Max CPU reached."
