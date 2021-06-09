@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ! command -v jsq >/dev/null; then
+if ! command -v jq >/dev/null; then
   read -p "This script requires jq to be installed and on your PATH. Would you like to install jq now? (Y/N)" answer
     if [[ "$answer" == "y" || "$answer" == "Y"  ]]; then
       sudo apt update && sudo apt install -y jq
