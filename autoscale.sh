@@ -42,11 +42,13 @@ function initialize () {
 		echo $serversjson | jq '.[] | .[] | "\(.name) \(.object_uuid)" ' | tr -d "\"" | column -t -s' '
 
 		read -p "Please enter the SERVER_UUID of this Server: " SERVER_UUID
+		read -p "Enter max CPU (Number)" cpumax
     touch hosttechAutoscale.conf
 cat <<EOT >> hosttechAutoscale.conf
 USER_UUID="$USER_UUID"
 API_TOKEN="$API_TOKEN"
 SERVER_UUID="$SERVER_UUID"
+cpumax="$cpumax"
 EOT
 		echo "It's recommended to install a Cronjob for this script. Would you like to install a Cronjpb now?"
 		read -p "Install Cronjob? (Y/N): " cronjob && [[ $cronjob == [yY] || $cronjob == [yY][eE][sS] ]] || exit 1
@@ -131,6 +133,10 @@ fi
 # This Script scales by 1 CPU if conditions are met (CPU-Threshold reached and Uptime longer than 10 Minutes).
 if [[ $((cpuuse)) -ge $cpulimit && $((uptime)) -gt 10 ]]; then
 	cpunew=$((cpu+1))
+	if [[ $cpunew > $cpumax ]]; then
+		echo "Max CPU reached."
+		exit
+	fi
 	echo "New CPU $cpunew"
 	more_cpu $cpunew
 	echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: The number of CPU on this Server was updated. $cpunew Cores are activ now." >> update.log
