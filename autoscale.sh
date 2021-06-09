@@ -32,7 +32,7 @@ function initialize () {
 		read -p "Please enter your API-Token as found on https://hosttech.cloud/Easy/APIs/: " API_TOKEN
 
 		# Get the List of Servernames and SERVER_UUID
-		serversjson=$(curl -H "Content-Type: application/json" \
+		serversjson=$(curl -s -H "Content-Type: application/json" \
 		-H "X-Auth-UserId: $USER_UUID" \
 		-H "X-Auth-Token: $API_TOKEN" \
 		-X GET \
