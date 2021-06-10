@@ -166,7 +166,7 @@ if [[ $cpuuse = 0* ]]; then
 	exit 1
 fi
 
-# This Script scales by 1 CPU if conditions are met (CPU-Threshold reached and Uptime longer than 20 Minutes).
+# This Script scales by 1 CPU if conditions are met (CPU-Threshold reached and Uptime longer than $delay Minutes).
 if [[ $((cpuuse)) -ge $cpulimit && $((uptime)) -gt $delay ]]; then
 	cpunew=$((cpu+1))
 	# Exit if maxcpu reached
