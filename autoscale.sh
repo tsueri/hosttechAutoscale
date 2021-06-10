@@ -9,7 +9,7 @@ if ! [ $(id -u) = 0 ]; then
 fi
 
 if ! command -v jq >/dev/null; then
-  read -p "This script requires jq to be installed and on your PATH. Would you like to install jq now? (Y/N)" answer
+  read -p "This script requires jq to be installed to work. Would you like to install jq now? (Y/N)" answer
     if [[ "$answer" == "y" || "$answer" == "Y"  ]]; then
       apt update && apt install -y jq
     else
@@ -42,13 +42,49 @@ function initialize () {
 		echo $serversjson | jq '.[] | .[] | "\(.name) \(.object_uuid)" ' | tr -d "\"" | column -t -s' '
 
 		read -p "Please enter the SERVER_UUID of this Server: " SERVER_UUID
-		read -p "Enter max CPU (Number): " cpumax
+		
+		read -p "Enter max CPU (default 32): " cpumax
+		if [[ -z "$cpumax" ]]; then
+        	cpumax=32
+		else
+
+			while [[ ! $cpumax =~ ^[0-9]+$ ]]; do
+        		read -p "Enter a valid number (default 32): " cpumax
+        	if [[ -z "$cpumax" ]]; then
+        		cpumax=32
+        	fi
+			done
+
+		fi
+
+		[[ $cpumax =~ ^[0-9]+$ ]] && echo "Your host will scale up to $cpumax CPU cores"
+
+
+		echo "Depending on the Apps, Databases etc. it takes some time for the host to \"calm down\" afer reboot. By default there is a delay of 10 Minutes until the script starts scaling. You can increase this value as you wish."
+		read -p "Enter number of Minutes for delay: " delay
+
+		if [[ -z "$delay" ]]; then
+        	delay=10
+		else
+
+			while [[ ! $delay =~ ^[0-9]+$ ]]; do
+        		read -p "Enter a valid number for the delay: " delay
+        	if [[ -z "$delay" ]]; then
+        		delay=10
+        	fi
+			done
+
+		fi
+
+		[[ $delay =~ ^[0-9]+$ ]] && echo "You have set $delay minutes"
+
     touch hosttechAutoscale.conf
 cat <<EOT >> hosttechAutoscale.conf
 USER_UUID="$USER_UUID"
 API_TOKEN="$API_TOKEN"
 SERVER_UUID="$SERVER_UUID"
 cpumax="$cpumax"
+delay="$delay"
 EOT
 		echo "It's recommended to install a Cronjob for this script. Would you like to install a Cronjpb now?"
 		read -p "Install Cronjob? (Y/N): " cronjob && [[ $cronjob == [yY] || $cronjob == [yY][eE][sS] ]] || exit 1
@@ -62,7 +98,7 @@ EOT
 	fi
 }
 
-# Allocate new Ressources
+# Allocate new resources
 function ressource_update () {
 	# Based on script by William Lam - http://engineering.ucsb.edu/~duonglt/vmware/
 
@@ -131,7 +167,7 @@ if [[ $cpuuse = 0* ]]; then
 fi
 
 # This Script scales by 1 CPU if conditions are met (CPU-Threshold reached and Uptime longer than 20 Minutes).
-if [[ $((cpuuse)) -ge $cpulimit && $((uptime)) -gt 20 ]]; then
+if [[ $((cpuuse)) -ge $cpulimit && $((uptime)) -gt $delay ]]; then
 	cpunew=$((cpu+1))
 	# Exit if maxcpu reached
 	if [[ $cpunew > $cpumax ]]; then
