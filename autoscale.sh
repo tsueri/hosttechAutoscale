@@ -59,7 +59,6 @@ function initialize () {
 
 		[[ $cpumax =~ ^[0-9]+$ ]] && echo "Your host will scale up to $cpumax CPU cores"
 
-
 		echo "Depending on the Apps, Databases etc. it takes some time for the host to \"calm down\" afer reboot. By default there is a delay of 10 Minutes until the script starts scaling. You can increase this value as you wish."
 		read -p "Enter number of Minutes for delay: " delay
 
