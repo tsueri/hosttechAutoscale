@@ -41,7 +41,6 @@ function setavload() {
 		avloadminutes=15
 		;;
 	esac
-	echo -e "avloadabc=$avloadabc \navload=$avload \navloadminutes=$avloadminutes"
 }
 
 function initialize() {
@@ -127,6 +126,27 @@ function initialize() {
 
 		[[ $avloadabc =~ ^[a-c]+$ ]] && echo "You have set $avloadminutes minutes as Averave Load"
 
+		sleep 2
+		clear
+
+		echo -e "Threshold is a value relative to all available cores. If you enter 50, the script already scales by one core when the CPU's capacity is half utilized."
+		read -p "Enter Threshold (Number between 50-99, default: 90): " threshold
+
+		if [[ -z "$threshold" ]]; then
+			threshold=90
+		else
+
+			while [[ ! $threshold =~ ^[5-9][0-9]?$ ]]; do
+				read -p "This Number is not valid. Enter Threshold (Number between 50-99, default: 90): " threshold
+				if [[ -z "$threshold" ]]; then
+					threshold=90
+				fi
+			done
+
+		fi
+
+		[[ $threshold =~ ^[5-9][0-9]?$ ]] && echo "You have set Threshold to $threshold% CPU utilization"
+
 		touch hosttechAutoscale.conf
 		cat <<EOT >>hosttechAutoscale.conf
 USER_UUID="$USER_UUID"
@@ -135,6 +155,7 @@ SERVER_UUID="$SERVER_UUID"
 cpumax="$cpumax"
 delay="$delay"
 avload="$avload"
+threshold="$threshold"
 EOT
 		sleep 2
 		clear
@@ -204,8 +225,8 @@ initialize
 # Variables for the Script. Finetuning should be made here.
 cpu=$(grep -c ^processor /proc/cpuinfo)
 cputotal=$((cpu))00
-cpulimit=$(($cputotal / 100 * 90))                         # Threshold: Change 90 to 80 if your Server should Scale up with 80 % Load.
-cpuuse=$(cat /proc/loadavg | awk '{print $'$avload'}' | tr -d "." | sed 's/^0*//' )
+cpulimit=$(($cputotal / 100 * $threshold))
+cpuuse=$(cat /proc/loadavg | awk '{print $'$avload'}' | tr -d "." | sed 's/^0*//')
 uptime=$(uptime | awk '{print $3}' | cut -f 1 -d "," | tr -d ":")
 
 echo "CPU Cores active: $cpu"
