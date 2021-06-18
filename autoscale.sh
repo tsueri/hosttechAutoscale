@@ -205,16 +205,11 @@ initialize
 cpu=$(grep -c ^processor /proc/cpuinfo)
 cputotal=$((cpu))00
 cpulimit=$(($cputotal / 100 * 90))                         # Threshold: Change 90 to 80 if your Server should Scale up with 80 % Load.
-cpuuse=$(cat /proc/loadavg | awk '{print $'$avload'}' | tr -d ".")
+cpuuse=$(cat /proc/loadavg | awk '{print $'$avload'}' | tr -d "." | sed 's/^0*//' )
 uptime=$(uptime | awk '{print $3}' | cut -f 1 -d "," | tr -d ":")
 
 echo "CPU Cores active: $cpu"
 echo "Usage / Limit: $cpuuse/$cpulimit"
-
-# This script will not scale correctly for 1 CPU-Configurations. Below Load 1, the script exits and will not scale by the threshold.
-if [[ $cpuuse = 0* ]]; then
-	exit 1
-fi
 
 # This Script scales by 1 CPU if conditions are met (CPU-Threshold reached and Uptime longer than $delay Minutes).
 if [[ $((cpuuse)) -ge $cpulimit && $((uptime)) -gt $delay ]]; then
