@@ -1,6 +1,6 @@
 # hosttechAutoscale
 
-Use it to scale your virtual servers at [hosttech.cloud](https://hosttech.cloud)
+Scales your virtual servers at [hosttech.cloud](https://hosttech.cloud)
 
 The Script initialises itself and creates a configfile. Start with `./autoscale.sh`
 
