@@ -1,4 +1,4 @@
-# hosttechAutoscale
+# hosttechAutoscale (deprecated)
 
 Scales your virtual servers at [hosttech.cloud](https://hosttech.cloud)
 
